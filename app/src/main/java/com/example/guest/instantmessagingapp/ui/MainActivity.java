@@ -1,7 +1,9 @@
-package com.example.guest.instantmessagingapp;
+package com.example.guest.instantmessagingapp.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.guest.instantmessagingapp.R;
 
 public class MainActivity extends AppCompatActivity {
 
