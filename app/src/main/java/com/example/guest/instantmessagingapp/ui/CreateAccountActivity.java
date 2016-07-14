@@ -33,9 +33,11 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
 
     public static final String TAG = CreateAccountActivity.class.getSimpleName();
     private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "Authentication failed");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
         ButterKnife.bind(this);
@@ -43,6 +45,8 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
         mAuth = FirebaseAuth.getInstance();
         mLoginTextView.setOnClickListener(this);
         mCreateUserButton.setOnClickListener(this);
+
+        createAuthStateListener();
     }
 
     @Override
@@ -54,7 +58,7 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
             finish();
         }
         if (view == mCreateUserButton) {
-            CreateNewUser();
+                CreateNewUser();
         }
     }
 
@@ -78,5 +82,34 @@ public class CreateAccountActivity extends AppCompatActivity implements View.OnC
                 });
     }
 
+    private void createAuthStateListener() {
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
 
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Intent intent = new Intent(CreateAccountActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        };
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
 }
